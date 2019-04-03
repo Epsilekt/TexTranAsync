@@ -2,6 +2,7 @@
 	FirstName : string
 	LastName : string
 	EmailAddress : string
+	Group : Group
 
 
 EditUserModel // Edit a existing user

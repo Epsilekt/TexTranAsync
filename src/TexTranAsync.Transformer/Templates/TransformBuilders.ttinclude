@@ -92,5 +92,4 @@ namespace TexTranAsync.Data.Abstractions.Entities
 }");
 	return builder.ToString();
 }
-
 #>

@@ -8,4 +8,8 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TexTranAsync.Data.Abstractions\TexTranAsync.Data.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
