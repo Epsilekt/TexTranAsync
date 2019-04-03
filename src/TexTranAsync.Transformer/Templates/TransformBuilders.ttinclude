@@ -1,0 +1,96 @@
+﻿<#@ include file="TransformManager.ttinclude" #><##><#
+
+string BuildInterface(string entityName)
+{
+var interfaceBuilder = new StringBuilder();
+interfaceBuilder.AppendLine($@"//This code is auto generated. Changes to this file will be lost!
+using System;
+using TexTranAsync.Data.Abstractions.Entities;
+
+namespace TexTranAsync.Data.Abstractions.Interfaces
+{{
+	public interface I{entityName}Repository
+	{{
+		void Add({entityName} {entityName.ToLower()});
+
+		void Delete({entityName} {entityName.ToLower()});
+
+		void Edit({entityName} {entityName.ToLower()});
+
+		{entityName} GetById(Guid id);
+
+		{entityName}[] GetAll();
+
+		void SaveChanges();
+	}}
+}}");
+
+return interfaceBuilder.ToString();
+}
+
+
+void BuildDbContext(string dbContextName)
+{
+	var stringBuilder = new StringBuilder();
+stringBuilder.AppendLine($@"// This code is auto generated. Changes to this file will be lost!
+using Microsoft.EntityFrameworkCore;
+using TexTranAsync.Data.Abstractions.Entities;
+
+namespace TexTranAsync.Data.Access.Context
+{{
+	public class {dbContextName} : DbContext
+	{{
+		public {dbContextName}(DbContextOptions options) 
+			: base(options) 
+		{{
+		}}
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{{");
+if(configurations != null)
+{
+	foreach(var configuration in configurations)
+	{
+		var entityTypeConfiguration = configuration.Replace(".cs", "");
+stringBuilder.AppendLine($@"			modelBuilder.ApplyConfiguration(new {entityTypeConfiguration}());");
+	}
+}
+			
+stringBuilder.AppendLine(@"		}
+");
+
+
+foreach (var item in entityNames)
+{
+	var entity = item.Replace(".cs", "");
+	stringBuilder.AppendLine($"		public DbSet<{entity}> {entity}s {{ get; set; }}");
+}
+
+stringBuilder.AppendLine(@"	}
+}");
+
+SaveFile(contextFolder, dbContextName, stringBuilder.ToString());
+}
+
+string BuildBaseEntity()
+{
+	var builder = new StringBuilder();
+	builder.AppendLine(@"// This file is auto generated. Changes to this file will be lost!
+using System;
+
+namespace TexTranAsync.Data.Abstractions.Entities
+{
+    public interface IEntity
+    {
+		Guid Id { get; set; }
+    }
+
+	public class Entity: IEntity
+    {
+		public Guid Id { get; set; } 
+    }
+}");
+	return builder.ToString();
+}
+
+#>

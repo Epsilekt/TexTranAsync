@@ -1,0 +1,158 @@
+﻿<#@ template hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ include file="TransformModels.ttinclude" #><##><#@ 
+include file="TransformSetup.ttinclude" #><##>
+<# this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length); #>
+<#+
+string newLineRegEx = @"^\w+";
+string commentRegEx = @"//.+";
+string propertyRegex = @"^\s+(?<name>[^:]+)(?<center>[\s]?:[\s]?)(?<type>[^\?\s\?]+)(?<nullable>[$\?])?";
+
+public List<EntityDefinition> GenerateEntities(string[] lines)
+{
+	List<EntityDefinition> result = new List<EntityDefinition>();
+	var lineNumber = -1;
+
+	foreach(var line in lines)
+	{
+		lineNumber++;
+		if (String.IsNullOrEmpty(line)) continue;
+		
+		var matchEntity = Regex.Match(line, newLineRegEx);
+
+		if(matchEntity.Success)
+		{
+			var matchSummary = Regex.Match(line, commentRegEx);
+			
+			var entity = new EntityDefinition
+			{
+				Summary = matchSummary.Success ? matchSummary.Value : string.Empty,
+				Name = Regex.Replace(line, commentRegEx, ""),
+				Properties = GetProperties(lineNumber, lines)
+			};
+
+			result.Add(entity);
+		}
+	}
+	return result;
+}
+
+public List<ModelDefinition> GenerateModels(string[] lines)
+{
+	List<ModelDefinition> result = new List<ModelDefinition>();
+	var lineNumber = -1;
+
+	foreach(var line in lines)
+	{
+		lineNumber++;
+		if (String.IsNullOrEmpty(line)) continue;
+		
+		var matchEntity = Regex.Match(line, newLineRegEx);
+
+		if(matchEntity.Success)
+		{
+			var matchSummary = Regex.Match(line, commentRegEx);
+			
+			var entity = new ModelDefinition
+			{
+				Summary = matchSummary.Success ? matchSummary.Value : string.Empty,
+				Name = Regex.Replace(line, commentRegEx, ""),
+				Properties = GetProperties(lineNumber, lines)
+			};
+
+			result.Add(entity);
+		}
+	}
+	return result;
+}
+
+public PropertyDefinition[] GetProperties(int lineNumber, string[] lines)
+{
+	List<PropertyDefinition> properties = new List<PropertyDefinition>();
+
+	for (var i = lineNumber + 1; i < lines.Length; i++)
+	{
+		var matchProperties = Regex.Match(lines[i], propertyRegex);
+
+		if (matchProperties.Success)
+		{
+				properties.Add(new PropertyDefinition(matchProperties.Groups["name"].Value, matchProperties.Groups["type"].Value, string.IsNullOrEmpty(matchProperties.Groups["nullable"].Value) ? false : true));
+		}
+		else
+		{
+			break;
+		}
+	}
+	return properties.ToArray();
+}
+
+public List<EnumDefinition> GenerateEnums(string[] lines)
+{
+	List<EnumDefinition> result = new List<EnumDefinition>();
+	var lineNumber = -1;
+
+	foreach(var line in lines)
+	{
+		lineNumber++;
+		if (String.IsNullOrEmpty(line)) continue;
+		
+		var match = Regex.Match(line, @"^\s+");
+
+		if(!match.Success)
+		{
+			var enumDefinition = new EnumDefinition
+			{
+				Name = line,
+				Constants = GetConstants(lineNumber, lines)
+			};
+
+			result.Add(enumDefinition);
+		}
+	}
+	return result;
+}
+
+public EnumConstantDefinition[] GetConstants(int lineNumber, string[] lines)
+{
+	List<EnumConstantDefinition> enumConstants = new List<EnumConstantDefinition>();
+
+	for (var i = lineNumber + 1; i < lines.Length; i++)
+	{
+		var match = Regex.Match(lines[i], @"^\s+(?<name>[^:]+) : (?<value>[^\s]+)");
+
+		if (match.Success)
+		{
+				enumConstants.Add(new EnumConstantDefinition(match.Groups["name"].Value, match.Groups["value"].Value ));
+		}
+		else
+		{
+			break;
+		}
+	}
+	return enumConstants.ToArray();
+}
+
+/* Methods */
+
+public void SaveFile(string folder, string fileName, string content)
+{
+	using (FileStream fs = new FileStream(Path.Combine(folder, fileName.Trim() + ".cs"), FileMode.Create))
+    {
+        using (StreamWriter str = new StreamWriter(fs))
+        {
+            str.WriteLine(content);
+            str.Flush();
+        }
+    }
+}
+
+public void RemoveFilesFromFolder(string path)
+{
+	Array.ForEach(Directory.GetFiles(path), File.Delete);
+}
+#>

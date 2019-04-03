@@ -1,0 +1,8 @@
+﻿Gender
+	Male : 1
+	Female : 2
+	Unknown : 3
+
+Role
+	Member : 1
+	Admin : 2

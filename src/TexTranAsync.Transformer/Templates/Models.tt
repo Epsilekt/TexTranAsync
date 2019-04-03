@@ -1,0 +1,54 @@
+﻿<#@ include file="TransformManager.ttinclude" #>
+<#
+RemoveFilesFromFolder(modelFolder);
+List<ModelDefinition> models = GenerateModels(modelLines); 
+
+if(models != null)
+{
+	foreach (var model in models)
+	{
+#>
+// This file is auto generated. Changes to this file will be lost!
+using System;
+using System.Collections.Generic;
+	
+namespace TextTranAsync.Data.Abstractions.Entities
+{
+<#
+	if (!string.IsNullOrEmpty(model.Summary))
+	{
+	var summary = Regex.Replace(model.Summary, "// ", "");
+#>
+	/// <summary>
+	/// <#= summary #>
+	/// </summary>
+<#
+	}
+#>
+	public class <#= (model.Name).Trim() #>
+	{
+<#
+	foreach (var property in model.Properties)
+	{
+		if (property.Nullable)
+		{
+#>
+		public <#= property.Type #>? <#= property.Name #> { get; set; }
+<#
+		}
+		else
+		{
+#>
+		public <#= property.Type #> <#= property.Name #> { get; set; }
+<#
+		}
+	}
+#>
+	}
+}
+<#
+	SaveFile(modelFolder, model.Name, this.GenerationEnvironment.ToString());
+	this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+	}
+}
+#>

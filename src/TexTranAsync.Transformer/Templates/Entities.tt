@@ -1,0 +1,56 @@
+﻿<#@ include file="TransformBuilders.ttinclude" #><##><#
+RemoveFilesFromFolder(entitiesFolder);
+SaveFile(entityBaseFolder, "IEntity", BuildBaseEntity());
+
+List<EntityDefinition> entities = GenerateEntities(entityLines); 
+
+if(entities != null)
+{
+	foreach (var entity in entities)
+	{
+#>
+// This file is auto generated. Changes to this file will be lost!
+using System;
+using System.Collections.Generic;
+using TexTranAsync.Data.Abstractions.Enums;
+	
+namespace TexTranAsync.Data.Abstractions.Entities
+{
+<#
+	if (!string.IsNullOrEmpty(entity.Summary))
+	{
+#>
+	/// <summary>
+	/// <#= Regex.Replace(entity.Summary, "// ", "") #>
+	/// </summary>
+<#
+	}
+#>
+	public class <#= entity.Name.Trim() #> : Entity
+	{
+	<#
+	foreach (var property in entity.Properties)
+	{
+		if (property.Nullable)
+		{
+#>		
+		public <#= property.Type #>? <#= property.Name #> { get; set; }
+<#
+	}
+		else
+		{
+#>		
+		public <#= property.Type #> <#= property.Name #> { get; set; }
+<#
+		}
+	}
+#>
+	}
+}
+<#
+	SaveFile(entitiesFolder, entity.Name, this.GenerationEnvironment.ToString());
+	BuildDbContext(contextName);
+	this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+	}
+}
+#>

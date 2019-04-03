@@ -1,0 +1,12 @@
+﻿User // Description goes here
+	FirstName : string
+	LastName : string
+	EmailAddress : string
+	DateOfBirth : DateTimeOffset
+	Gender: Gender
+	Group : Group
+	NullableNumber : int?
+
+Group
+	Name : string
+	Members : List<User>

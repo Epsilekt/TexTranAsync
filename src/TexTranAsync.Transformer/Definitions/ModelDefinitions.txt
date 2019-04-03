@@ -1,0 +1,11 @@
+﻿CreateUserModel // Create a new user
+	FirstName : string
+	LastName : string
+	EmailAddress : string
+
+
+EditUserModel // Edit a existing user
+	Id : Guid
+	FirstName : string
+	LastName : string
+	EmailAddress : string

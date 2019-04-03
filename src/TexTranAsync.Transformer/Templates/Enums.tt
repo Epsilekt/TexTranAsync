@@ -1,0 +1,29 @@
+﻿<#@ include file="TransformManager.ttinclude" #><##>
+<#
+RemoveFilesFromFolder(enumsFolder);
+List<EnumDefinition> enums = GenerateEnums(enumLines); 
+foreach (var item in enums)
+{
+#>
+//  This file is auto generated. Changes to this file will be lost!
+using System;
+	
+namespace TexTranAsync.Data.Abstractions.Enums
+{
+	public enum <#= item.Name #>
+	{
+<#
+	foreach(var constant in item.Constants)
+	{
+#>
+		<#= constant.Name #> = <#= constant.Value #>,
+<#
+	}
+#>
+	}
+}
+<#
+		SaveFile(enumsFolder, item.Name, this.GenerationEnvironment.ToString());
+		this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+}
+#>
