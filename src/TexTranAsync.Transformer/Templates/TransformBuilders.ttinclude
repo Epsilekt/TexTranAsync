@@ -1,5 +1,4 @@
 ﻿<#@ include file="TransformManager.ttinclude" #><##><#
-
 string BuildInterface(string entityName)
 {
 var interfaceBuilder = new StringBuilder();

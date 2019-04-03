@@ -101,9 +101,9 @@ public List<EnumDefinition> GenerateEnums(string[] lines)
 		lineNumber++;
 		if (String.IsNullOrEmpty(line)) continue;
 		
-		var match = Regex.Match(line, @"^\s+");
+		var match = Regex.Match(line, newLineRegEx);
 
-		if(!match.Success)
+		if(match.Success)
 		{
 			var enumDefinition = new EnumDefinition
 			{
