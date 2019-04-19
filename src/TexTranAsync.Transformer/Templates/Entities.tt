@@ -12,7 +12,6 @@ if(entities != null)
 // This file is auto generated. Changes to this file will be lost!
 using System;
 using System.Collections.Generic;
-using TexTranAsync.Data.Abstractions.Enums;
 	
 namespace TexTranAsync.Data.Abstractions.Entities
 {
@@ -53,4 +52,5 @@ namespace TexTranAsync.Data.Abstractions.Entities
 	this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
 	}
 }
+this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
 #>

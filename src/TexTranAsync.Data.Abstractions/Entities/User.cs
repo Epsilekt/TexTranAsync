@@ -1,7 +1,6 @@
 // This file is auto generated. Changes to this file will be lost!
 using System;
 using System.Collections.Generic;
-using TexTranAsync.Data.Abstractions.Enums;
 	
 namespace TexTranAsync.Data.Abstractions.Entities
 {
@@ -18,8 +17,6 @@ namespace TexTranAsync.Data.Abstractions.Entities
 		public string EmailAddress  { get; set; }
 		
 		public DateTimeOffset DateOfBirth  { get; set; }
-		
-		public Gender Gender { get; set; }
 		
 		public Group Group  { get; set; }
 		

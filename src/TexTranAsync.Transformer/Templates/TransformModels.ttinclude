@@ -1,7 +1,5 @@
 <#@ import namespace="System.IO" #><##> 
 <#+
-/* Models */ 
-
 public class EntityDefinition
 {
 	public string Name { get; set; }
@@ -41,10 +39,7 @@ public class EnumConstantDefinition
 	public string Value { get; set; }
 }
 
-public class ModelDefinition
+public class ModelDefinition: EntityDefinition
 {
-	public string Name { get; set; }
-	public PropertyDefinition[] Properties { get; set; }
-	public string Summary { get; set; }
 }
 #>
